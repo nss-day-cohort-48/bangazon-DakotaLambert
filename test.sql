@@ -1,1 +1,0 @@
-SELECT * FROM bangazonapi_product WHERE id=50
