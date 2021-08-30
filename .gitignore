@@ -21,6 +21,9 @@ media
 *.py[cod]
 *$py.class
 
+# SQL
+.sql
+
 # C extensions
 *.so
 
