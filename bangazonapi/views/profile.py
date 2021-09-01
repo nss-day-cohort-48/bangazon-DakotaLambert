@@ -115,7 +115,7 @@ class Profile(ViewSet):
             @apiError (404) {String} message  Not found message.
             """
             try:
-                open_order = Order.objects.get(
+                open_order = Order.objects.all(
                     customer=current_user, payment_type=None)
                 lineitems = OrderProduct.objects.filter(order=open_order)
                 lineitems.delete()
