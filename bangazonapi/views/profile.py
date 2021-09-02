@@ -1,4 +1,5 @@
 """View module for handling requests about customer profiles"""
+from bangazonapi.models.payment import Payment
 import datetime
 from django.http import HttpResponseServerError
 from django.contrib.auth.models import User
@@ -362,6 +363,12 @@ class RecommenderSerializer(serializers.ModelSerializer):
         model = Recommendation
         fields = ('product', 'customer',)
 
+class PaymentSerializer(serializers.ModelSerializer):
+
+    customer = CustomerSerializer()
+    class Meta:
+        model = Payment
+        fields = ('merchant_name', 'customer', 'expiration_date' )
 
 class ProfileSerializer(serializers.ModelSerializer):
     """JSON serializer for customer profile
@@ -371,6 +378,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     """
     user = UserSerializer(many=False)
     recommends = RecommenderSerializer(many=True)
+    payment_types = PaymentSerializer(many=True)
 
     class Meta:
         model = Customer
