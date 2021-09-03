@@ -32,11 +32,9 @@ class Products(ViewSet):
         @api {POST} /products POST new product
         @apiName CreateProduct
         @apiGroup Product
-
         @apiHeader {String} Authorization Auth token
         @apiHeaderExample {String} Authorization
             Token 9ba45f09651c5b0c404f37a2d2572c026c146611
-
         @apiParam {String} name Short form name of product
         @apiParam {Number} price Cost of product
         @apiParam {String} description Long form description of product
@@ -52,7 +50,6 @@ class Products(ViewSet):
                 "location": "Pittsburgh",
                 "category_id": 4
             }
-
         @apiSuccess (200) {Object} product Created product
         @apiSuccess (200) {id} product.id Product Id
         @apiSuccess (200) {String} product.name Short form name of product
@@ -116,9 +113,7 @@ class Products(ViewSet):
         @api {GET} /products/:id GET product
         @apiName GetProduct
         @apiGroup Product
-
         @apiParam {id} id Product Id
-
         @apiSuccess (200) {Object} product Created product
         @apiSuccess (200) {id} product.id Product Id
         @apiSuccess (200) {String} product.name Short form name of product
@@ -154,19 +149,17 @@ class Products(ViewSet):
             product = Product.objects.get(pk=pk)
             serializer = ProductSerializer(product, context={'request': request})
             return Response(serializer.data)
-        except Exception as ex:
-            return HttpResponseServerError(ex)
+        except Product.DoesNotExist as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
 
     def update(self, request, pk=None):
         """
         @api {PUT} /products/:id PUT changes to product
         @apiName UpdateProduct
         @apiGroup Product
-
         @apiHeader {String} Authorization Auth token
         @apiHeaderExample {String} Authorization
             Token 9ba45f09651c5b0c404f37a2d2572c026c146611
-
         @apiParam {id} id Product Id to update
         @apiSuccessExample {json} Success
             HTTP/1.1 204 No Content
@@ -193,11 +186,9 @@ class Products(ViewSet):
         @api {DELETE} /products/:id DELETE product
         @apiName DeleteProduct
         @apiGroup Product
-
         @apiHeader {String} Authorization Auth token
         @apiHeaderExample {String} Authorization
             Token 9ba45f09651c5b0c404f37a2d2572c026c146611
-
         @apiParam {id} id Product Id to delete
         @apiSuccessExample {json} Success
             HTTP/1.1 204 No Content
@@ -212,6 +203,7 @@ class Products(ViewSet):
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
 
         except Exception as ex:
+            print(ex.args[0])
             return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def list(self, request):
@@ -219,7 +211,6 @@ class Products(ViewSet):
         @api {GET} /products GET all products
         @apiName ListProducts
         @apiGroup Product
-
         @apiSuccess (200) {Object[]} products Array of products
         @apiSuccessExample {json} Success
             [
