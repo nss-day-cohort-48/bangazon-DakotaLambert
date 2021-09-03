@@ -2,7 +2,7 @@ import datetime
 import json
 from rest_framework import status
 from rest_framework.test import APITestCase
-
+from bangazonapi.models.payment import Payment
 
 class PaymentTests(APITestCase):
     def setUp(self) -> None:
@@ -41,3 +41,23 @@ class PaymentTests(APITestCase):
         self.assertEqual(json_response["create_date"], str(datetime.date.today()))
 
     # TODO: Delete payment type
+
+    def test_delete_payment(self):
+        """[summary]
+        """
+
+        Payment.objects.create(
+            merchant_name="American Express",
+            account_number="111-1111-1111",
+            expiration_date="2024-12-31",
+            create_date=datetime.date.today(),
+            customer_id=1)
+
+        url = "/paymenttypes/1"
+
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
