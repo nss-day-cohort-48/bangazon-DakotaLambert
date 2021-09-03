@@ -19,7 +19,7 @@ class PaymentSerializer(serializers.HyperlinkedModelSerializer):
             lookup_field='id'
         )
         fields = ('id', 'url', 'merchant_name', 'account_number',
-                  'expiration_date', 'create_date', 'customer_id')
+                  'expiration_date', 'create_date', 'customer')
 
 
 class Payments(ViewSet):
@@ -49,9 +49,12 @@ class Payments(ViewSet):
             payment_type = Payment.objects.get(pk=pk)
             serializer = PaymentSerializer(
                 payment_type, context={'request': request})
+
             return Response(serializer.data)
+        except Payment.DoesNotExist as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
         except Exception as ex:
-            return HttpResponseServerError(ex)
+            return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def destroy(self, request, pk=None):
         """Handle DELETE requests for a single payment type
@@ -62,6 +65,7 @@ class Payments(ViewSet):
             payment = Payment.objects.get(pk=pk)
             payment.delete()
             return Response({}, status=status.HTTP_204_NO_CONTENT)
+
         except Payment.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
         except Exception as ex:
@@ -72,10 +76,10 @@ class Payments(ViewSet):
         payment_types = Payment.objects.all()
 
         customer = Customer.objects.get(user=request.auth.user)
-        customer_id = customer.id
+        
+        if customer is not None:
+            payment_types = payment_types.filter(customer__id=customer.id)
 
-        if customer_id is not None:
-            payment_types = payment_types.filter(customer__id=customer_id)
         serializer = PaymentSerializer(
             payment_types, many=True, context={'request': request})
         return Response(serializer.data)
